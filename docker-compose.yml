@@ -12,3 +12,5 @@ services:
       build:
         context: .
         dockerfile: ./containers/php/Dockerfile
+      volumes:
+        - "./code:/var/www/html"
