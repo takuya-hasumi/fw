@@ -1,23 +1,28 @@
 <?php
 $request_url = $_SERVER["REQUEST_URI"];
+// var_dump($request_url);
 
-$file = "";
-if ($request_url == "/") {
-  $file = file_get_contents("./views/welcome.html");
-  $val = "welcome";
-} elseif ($request_url == "/hasumin") {
-  $file = file_get_contents("./views/hasumin.html");
-  $val = "minhasu";
-} elseif ($request_url == "/obachan") {
-  $file = file_get_contents("./views/obachan.html");
-  $val = "obatarian";
+/* 学習用（実装とは関係なし）
+$reg_exp_params = '/^\/[a-z]*\?[0-9a-zA-Z]*$/';
+preg_match($reg_exp_params, $request_url, $match);
+var_dump($match);
+*/
+
+// リクエストURLからコントローラー名とパラメータを取得
+$preg_split_url = preg_split("/[\/\?\&]/", $request_url);
+// var_dump($preg_split_url);
+$controller_name = $preg_split_url[1];
+$str = array_shift($preg_split_url);
+// var_dump($controller_name);
+// var_dump($str);
+// var_dump($preg_split_url);
+
+if ($controller_name == "") {
+  require("./controller/indexController.php");
+} elseif ($controller_name == "hasu") {
+  require("./controller/hasuController.php");
+} elseif ($controller_name == "oba") {
+  require("./controller/obaController.php");
 } else {
-  $file = file_get_contents("./views/404.html");
-  $val = "welcome";
+  require("./controller/defaultController.php");
 }
-$array = array(
-  'file' => $file,
-  'val'  => $val
-);
-
-return $array;
