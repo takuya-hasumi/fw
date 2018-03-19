@@ -1,5 +1,7 @@
 <?php
-print "in index controller";
+print "in index controller!";
 $request_url = $_SERVER["REQUEST_URI"];
 $parameters = $_SERVER['QUERY_STRING'];
-// var_dump($parameters);
+
+$file = file_get_contents("./views/welcome.html");
+return $file;
