@@ -1,20 +1,15 @@
 <?php
-/*
- * コントローラを介してHTMLファイルの読み込み
- * @return string $file 読み込みHTMLファイル内容
- * @return string $params URLパラメータ
- */
-$route_path = "./configs/route.php";
-$route_file = require($route_path);
+// ルーティング処理
+require("./configs/route.php");
+$route = new UserRoute();
+$routing = $route->getRouting();
 
-// テンプレートエンジン的な定義
-$pattern_value = '[a-z]*';
-$pattern = '/{{' . $pattern_value . '}}/';
+// module, queryの取得
+$module = $routing['module'];
+$query  = $routing['query'];
 
-// テンプレートエンジン的な置換
-$subject = $file;
-$replacement = "reg " . $params . "!!";
-$replace = preg_replace($pattern, $replacement, $subject);
+// 任意のコントローラを処理
+require("./vendor/controller/BaseController.php");
+$user_controller = $route->selectUserController($module);
 
-// 最終的なファイルの出力
-print $replace;
+$action = new Action();

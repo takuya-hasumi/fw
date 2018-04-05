@@ -1,7 +1,15 @@
 <?php
-print "in oba controller!";
-$request_url = $_SERVER["REQUEST_URI"];
-$parameters = $_SERVER['QUERY_STRING'];
+class ObaController extends BaseController
+{
+  /**
+   * 実行される処理
+   * @param  
+   * @return 
+   */
+  public function Action($param)
+  {
+    $file = file_get_contents("./views/hasumin.html");
+    return $file;
+  }
 
-$file = file_get_contents("./views/obachan.html");
-return $file;
+}

@@ -1,7 +1,21 @@
 <?php
-print "in hasu controller!";
-$request_url = $_SERVER["REQUEST_URI"];
-$parameters = $_SERVER['QUERY_STRING'];
+class HasuController extends BaseController
+{
+  /**
+   * 実行される処理
+   * @param  
+   * @return 
+   */
+  public function Action()
+  {
+    // 任意のテンプレートの呼び出し
+    $file = getTemplate("hasumin");
 
-$file = file_get_contents("./views/hasumin.html");
-return $file;
+    // 呼び出したテンプレートを置換
+    $file = regParams($file, "置換したで");
+
+    // HTMLに出力
+    viewHtml($file);
+  }
+
+}
