@@ -12,4 +12,6 @@ $query  = $routing['query'];
 require("./vendor/controller/BaseController.php");
 $user_controller = $route->selectUserController($module);
 
-$action = new Action();
+$class_name = ucfirst($module[0]) . "Controller";
+$exec = new $class_name();
+$exec->Action();

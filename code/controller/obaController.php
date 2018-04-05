@@ -6,10 +6,16 @@ class ObaController extends BaseController
    * @param  
    * @return 
    */
-  public function Action($param)
+  public function Action()
   {
-    $file = file_get_contents("./views/hasumin.html");
-    return $file;
+    // 任意のテンプレートの呼び出し
+    $file = $this->getTemplate("obachan");
+
+    // 呼び出したテンプレートを置換
+    $file = $this->regParams($file, "おばと叔母");
+
+    // HTMLに出力
+    $this->viewHtml($file);
   }
 
 }

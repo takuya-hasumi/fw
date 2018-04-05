@@ -9,13 +9,13 @@ class HasuController extends BaseController
   public function Action()
   {
     // 任意のテンプレートの呼び出し
-    $file = getTemplate("hasumin");
+    $file = $this->getTemplate("hasumin");
 
     // 呼び出したテンプレートを置換
-    $file = regParams($file, "置換したで");
+    $file = $this->regParams($file, "置換したで");
 
     // HTMLに出力
-    viewHtml($file);
+    $this->viewHtml($file);
   }
 
 }

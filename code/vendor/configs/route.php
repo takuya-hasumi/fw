@@ -69,7 +69,14 @@ class Route
   {
     // 大文字変換
     $controller_name = ucfirst($module[0]);
-    $controller_path = "./controller/" . $controller_name . "Controller.php";
+    if (!empty($controller_name)) {
+      $controller_path = "./controller/" . $controller_name . "Controller.php";
+    } elseif (empty($controller_name)) {
+      $controller_path = "./controller/IndexController.php";
+    } else {
+      $controller_path = "./controller/ExceptionController.php";
+      return false;
+    }
     $user_controller = require($controller_path);
 
     return $user_controller;

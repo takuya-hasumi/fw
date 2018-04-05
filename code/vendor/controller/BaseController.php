@@ -6,28 +6,13 @@ abstract class BaseController
   abstract public function Action();
 
   /**
-   * ルーティングによって任意のコントローラーを選択
-   * @param  mixed $module
-   * @return mixed $user_controller
-   */
-  // function selectUserController($module)
-  // {
-  //   // 大文字変換
-  //   $controller_name = ucfirst($module[0]);
-  //   $controller_path = "./controller/" . $controller_name . "Controller.php";
-  //   $user_controller = require($controller_path);
-
-  //   return $user_controller;
-  // }
-
-  /**
    * テンプレートを呼び出す
    * @param  mixed $file_name
    * @return mixed $file
    */
   public function getTemplate($file_name)
   {
-    $file = file_get_contents("./views/" . $file_name . "html");
+    $file = file_get_contents("./views/" . $file_name . ".html");
     return $file;
   }
   
