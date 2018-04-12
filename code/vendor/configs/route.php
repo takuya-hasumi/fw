@@ -65,16 +65,20 @@ class Route
     {
         // 大文字変換
         $controller_name = ucfirst($module[0]);
+        // コントローラのパスを指定
         if (!empty($controller_name)) {
             $controller_path = "./controller/" . $controller_name . "Controller.php";
         } else {
             $controller_path = "./controller/IndexController.php";
+            $class_name = "IndexController";
         }
 
-        $class_name = "";
+        // 任意のコントローラを読み込む
         if ($file = file_exists($controller_path)) {
             $user_controller = require($controller_path);
-            $class_name = $controller_name . "Controller";
+            if (empty($class_name)) {
+                $class_name = $controller_name . "Controller";
+            }
         } else {
             $user_controller = require("./vendor/controller/ExceptionController.php");
             $class_name = "ExceptionController";
