@@ -2,16 +2,16 @@
 // ルーティング処理
 require("./configs/route.php");
 $route = new UserRoute();
-$routing = $route->getRouting();
+$reqParams = $route->getRoute();
 
 // module, queryの取得
-$module = $routing['module'];
-$query  = $routing['query'];
+$module = $reqParams['module'];
+$query  = $reqParams['query'];
 
-// 任意のコントローラを処理
+// 任意のコントローラを選択
 require("./vendor/controller/BaseController.php");
-$user_controller = $route->selectUserController($module);
+$class_name = $route->selectController($module);
 
-$class_name = ucfirst($module[0]) . "Controller";
+// コントローラをもとに実行
 $exec = new $class_name();
 $exec->Action();
