@@ -14,3 +14,15 @@ services:
         dockerfile: ./containers/php/Dockerfile
       volumes:
         - "./code:/var/www/html"
+
+  mysql:
+      restart: always
+      image: mysql:latest
+      volumes:
+          - ./mysql:/var/lib/mysql
+      environment:
+          - MYSQL_DATABASE=oreframe
+          - MYSQL_ROOT_USER=root
+          - MYSQL_ROOT_PASSWORD=password
+      ports:
+          - 3306:3306

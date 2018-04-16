@@ -45,5 +45,25 @@ abstract class BaseController
         // 出力
         print $file;
     }
-    
+
+    /**
+    * envを定義して取得
+    * @return array $env
+    */
+    public function getEnv()
+    {
+        // envファイルの読み込みと設定
+        $file = file_get_contents("./.env");
+        preg_match("/DB_DATABASE=(\w+)/", $file , $env_database);
+        preg_match("/DB_USERNAME=(\w+)/", $file , $env_username);
+        preg_match("/DB_PASSWORD=(\w+)/", $file , $env_password);
+        $env = [
+            'DB_DATABASE' => $env_database[1],
+            'DB_USERNAME' => $env_username[1],
+            'DB_PASSWORD' => $env_password[1]
+        ];
+        return $env;
+
+    }
+
 }
