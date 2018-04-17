@@ -12,6 +12,8 @@ abstract class BaseController
     */
     public function getTemplate($file_name)
     {
+        // return false;
+
         $file = file_get_contents("./views/" . $file_name . ".html");
         return $file;
     }
@@ -24,6 +26,8 @@ abstract class BaseController
     */
     public function regParams($file, $params)
     {
+        // return false;
+
         // テンプレートを呼び出す
         $pattern_value = '[a-z]*';
         $pattern = '/{{' . $pattern_value . '}}/';
@@ -44,6 +48,7 @@ abstract class BaseController
     {
         // 出力
         print $file;
+        return true;
     }
 
     /**
