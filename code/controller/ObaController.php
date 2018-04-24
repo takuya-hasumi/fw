@@ -4,12 +4,19 @@ class ObaController extends BaseController
     public function Action()
     {
         // 任意のテンプレートの呼び出し
-        $file = $this->getTemplate("obachan");
+        if (!$file = $this->getTemplate("obachan")) {
+            throw new Exception('テンプレートの呼び出しに失敗しました。');
+        }
 
         // 呼び出したテンプレートを置換
-        $file = $this->regParams($file, "おばと叔母");
+        if (!$file = $this->regParams($file, "おばと叔母")) {
+            throw new Exception('テンプレートの置換に失敗しました。');
+        }
 
         // HTMLに出力
-        $this->viewHtml($file);
+        if (!$this->viewHtml($file)) {
+            throw new Exception('HTMLの出力に失敗しました。');
+        }
+
     }
 }

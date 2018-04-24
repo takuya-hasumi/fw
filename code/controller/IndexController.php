@@ -4,12 +4,19 @@ class IndexController extends BaseController
     public function Action()
     {
         // 任意のテンプレートの呼び出し
-        $file = $this->getTemplate("index");
+        if (!$file = $this->getTemplate("index")) {
+            throw new Exception('テンプレートの呼び出しに失敗しました。');
+        }
 
         // 呼び出したテンプレートを置換
-        $file = $this->regParams($file, "This is INDEXだZ");
+        if (!$file = $this->regParams($file, "This is INDEXだZ")) {
+            throw new Exception('テンプレートの置換に失敗しました。');
+        }
 
         // HTMLに出力
-        $this->viewHtml($file);
+        if (!$this->viewHtml($file)) {
+            throw new Exception('HTMLの出力に失敗しました。');
+        }
+
     }
 }
