@@ -2,6 +2,27 @@
 // 抽象クラスの定義
 abstract class BaseController
 {
+    // DBに接続するコンストラクタ
+    public function __construct()
+    {
+        global $pdo;
+        global $env;
+
+        // グローバル定義した$pdoに対してdb接続とトランザクションを貼る
+        $env = $this->getEnv();
+        $pdo = new PDO(
+            'mysql:host=mysql;dbname=' . $env['DB_DATABASE'],
+            $env['DB_USERNAME'],
+            $env['DB_PASSWORD'],
+            [
+                PDO::ATTR_ERRMODE          => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_EMULATE_PREPARES => false,
+            ]
+        );
+        $pdo->beginTransaction();
+
+    }
+
     // 抽象メソッドの定義
     abstract public function Action();
 
@@ -12,8 +33,6 @@ abstract class BaseController
     */
     public function getTemplate($file_name)
     {
-        // return false;
-
         $file = file_get_contents("./views/" . $file_name . ".html");
         return $file;
     }
@@ -26,8 +45,6 @@ abstract class BaseController
     */
     public function regParams($file, $params)
     {
-        // return false;
-
         // テンプレートを呼び出す
         $pattern_value = '[a-z]*';
         $pattern = '/{{' . $pattern_value . '}}/';
@@ -47,8 +64,7 @@ abstract class BaseController
     public function viewHtml($file)
     {
         // 出力
-        print $file;
-        return true;
+        return (print $file) ? true: false;
     }
 
     /**
@@ -67,8 +83,8 @@ abstract class BaseController
             'DB_USERNAME' => $env_username[1],
             'DB_PASSWORD' => $env_password[1]
         ];
-        return $env;
 
+        return $env;
     }
 
 }
