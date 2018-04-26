@@ -19,6 +19,7 @@ abstract class BaseController
                 PDO::ATTR_EMULATE_PREPARES => false,
             ]
         );
+
         $pdo->beginTransaction();
 
     }
