@@ -34,6 +34,7 @@ abstract class BaseController
     */
     public function getTemplate($file_name)
     {
+        // return false;
         $file = file_get_contents("./views/" . $file_name . ".html");
         return $file;
     }

@@ -8,7 +8,7 @@ $reqParams = $route->getRoute();
 $module = $reqParams['module'];
 $query  = $reqParams['query'];
 
-// BaseController, BaseModelの呼び出し
+// BaseControllerの呼び出し
 require("./vendor/controller/BaseController.php");
 
 // 任意のコントローラを選択
@@ -21,9 +21,9 @@ try {
     $exec->Action();
     $stmt = $pdo->prepare("INSERT INTO commit_table (user_name) VALUES (:user_name)");
     $stmt->bindParam(':user_name', $env['DB_USERNAME'], PDO::PARAM_STR);
-    // if (!$stmt->execute()) {
-    //     throw new Exception('テーブルの書き込みに失敗したZ');
-    // }
+    if (!$stmt->execute()) {
+        throw new Exception('テーブルの書き込みに失敗したZ');
+    }
     $pdo->commit();
 
 } catch (PDOException $e) {

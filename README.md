@@ -1,45 +1,11 @@
-# docker-nginx-phpfpm
+## おれおれフレームワーク勉強会
 
-This is a simple sample.
-
-- docker
-- nginx
-- php-fpm
-
-(with Docker for Mac. )
-
-# Prerequisites
-
-Make sure that you installed Docker (for Mac).
-
-Ref. [Docker for Mac](https://docs.docker.com/docker-for-mac/)
-
-```
-$ docker -v
-Docker version 1.13.1-rc1, build 2527cfc
-
-$ docker-compose -v
-docker-compose version 1.10.0, build 4bd6f1a
-
-$ docker-machine -v
-docker-machine version 0.9.0, build 15fd4c7
-```
-
-# Usage
-
-```
-$ git clone git@github.com:mochizukikotaro/docker-nginx-phpfpm.git
-$ cd docker-nginx-phpfpm.git
-$ docker-compose up
-```
-
-Access `localhost:8080`, then you can get phpinfo. 
-
-
-![2017-02-05 22 32 27](https://cloud.githubusercontent.com/assets/7911481/22626536/087ded2e-ebf3-11e6-8276-f31ac71ae05a.png)
-
-
-```
-$ docker-compose ps
-$ docker-compose down
-```
+- ・素数を求める
+- ・階乗を求める(再帰)
+- ・ハノイの塔を解く(再帰)
+- ・擬似乱数を作ってみる
+- ・コンピュータの仕組み
+- ・情報処理試験(基本情報・応用情報)の勉強
+- ・GoFデザインパターン
+- ・簡易Webフレームワークを作ってオブジェクト指向を好きになる
+- ・テストコードとテストしやすいコード(とDIも)
