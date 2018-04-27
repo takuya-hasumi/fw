@@ -9,7 +9,7 @@ class HasuController extends BaseController
         }
 
         // 呼び出したテンプレートを置換
-        if (!$file = $this->regParams($file, "置換したで")) {
+        if (!$file = $this->replaceParams($file, "置換したで")) {
             throw new Exception('テンプレートの置換に失敗しました。');
         }
 

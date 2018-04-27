@@ -44,18 +44,39 @@ abstract class BaseController
     * @param  array $params
     * @return array $replace
     */
-    public function regParams($file, $params)
+    public function replaceParams($file, $params)
     {
-        // テンプレートを呼び出す
+        // パラメータの取得
+        $url_param = strstr($_SERVER["REQUEST_URI"], '?');
+        $url_param = str_replace('?', '', $url_param);
+        preg_match('/([a-z]*)\=([a-z0-9]*)/', $url_param, $parameters);
+        $key = $parameters[1];
+        $val = $parameters[2];
+
+        // 置換対象の定義
         $pattern_value = '[a-z]*';
         $pattern = '/{{' . $pattern_value . '}}/';
+        // 置換対象と置換数の定義
+        preg_match_all($pattern, $file, $matches);
+        $matches_cnt = count($matches[0]);
+        $keyword = ['{{', '}}'];
+        // 置換対象ごとに置換する
+        for ($i=0; $i < $matches_cnt; $i++) {
+            preg_match($pattern, $file, $match);
+            var_dump($match);
+            // 本文中にクエリと同じキーワードがあったらクエリの値で置き換え
+            if ($key && preg_match('/'.$key.'/', $match[0], $temp)) {
+                $replacement = str_replace($match[0], $val, $match[0]);
+            // それ以外の置換文字は引数指定
+            } else {
+                $replace_text = str_replace($keyword, '', $match[0]);
+                $replacement = $params . ": " . $replace_text;
+            }
+            $pattern_text = '/' . $match[0] . '/';
+            $file = preg_replace($pattern_text, $replacement, $file);
+        }
 
-        // テンプレートエンジン的な置換
-        $subject = $file;
-        $replacement = "reg " . $params . "!!";
-        $replace = preg_replace($pattern, $replacement, $subject);
-
-        return $replace;
+        return $file;
     }
 
     /**

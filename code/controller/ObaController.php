@@ -9,7 +9,7 @@ class ObaController extends BaseController
         }
 
         // 呼び出したテンプレートを置換
-        if (!$file = $this->regParams($file, "おばと叔母")) {
+        if (!$file = $this->replaceParams($file, "おばと叔母")) {
             throw new Exception('テンプレートの置換に失敗しました。');
         }
 

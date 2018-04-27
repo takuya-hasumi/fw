@@ -9,7 +9,7 @@ class IndexController extends BaseController
         }
 
         // 呼び出したテンプレートを置換
-        if (!$file = $this->regParams($file, "This is INDEXだZ")) {
+        if (!$file = $this->replaceParams($file, "This is INDEXだZ")) {
             throw new Exception('テンプレートの置換に失敗しました。');
         }
 
