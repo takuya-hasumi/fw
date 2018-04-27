@@ -63,7 +63,6 @@ abstract class BaseController
         // 置換対象ごとに置換する
         for ($i=0; $i < $matches_cnt; $i++) {
             preg_match($pattern, $file, $match);
-            var_dump($match);
             // 本文中にクエリと同じキーワードがあったらクエリの値で置き換え
             if ($key && preg_match('/'.$key.'/', $match[0], $temp)) {
                 $replacement = str_replace($match[0], $val, $match[0]);
