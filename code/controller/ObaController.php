@@ -22,9 +22,9 @@ class ObaController extends BaseController
         $user_name = "obachan";
         $stmt = $this->$pdo->prepare("INSERT INTO commit_table (user_name) VALUES (:user_name)");
         $stmt->bindParam(':user_name', $user_name, PDO::PARAM_STR);
-        if (!$stmt->execute()) {
-            throw new PDOException('テーブルの書き込みに失敗したZ');
-        }
+        // if (!$stmt->execute()) {
+        //     throw new PDOException('テーブルの書き込みに失敗したZ');
+        // }
 
     }
 }

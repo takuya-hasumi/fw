@@ -1,6 +1,8 @@
 <?php
 class Route
 {
+    public $status = "200";
+
     /**
      * ルーティングを取得
      * @param  string $request_url
@@ -81,6 +83,7 @@ class Route
             }
         } else {
             $user_controller = require("./vendor/controller/ExceptionController.php");
+            http_response_code(404);
             $class_name = "ExceptionController";
         }
 
