@@ -16,17 +16,4 @@ $class_name = $route->selectController($module);
 
 // コントローラをもとに実行
 $exec = new $class_name();
-try {
-    // 例外が発生しなければコミット
-    $exec->Action();
-    $stmt = $pdo->prepare("INSERT INTO commit_table (user_name) VALUES (:user_name)");
-    $stmt->bindParam(':user_name', $env['DB_USERNAME'], PDO::PARAM_STR);
-    if (!$stmt->execute()) {
-        throw new Exception('テーブルの書き込みに失敗したZ');
-    }
-    $pdo->commit();
-
-} catch (PDOException $e) {
-    echo "コミットできませんでした" . $e->getMessage();
-    $pdo->rollBack();
-}
+$exec->execAction();

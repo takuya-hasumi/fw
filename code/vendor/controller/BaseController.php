@@ -2,30 +2,45 @@
 // 抽象クラスの定義
 abstract class BaseController
 {
+    protected $pdo;
+    protected $env;
+
     // DBに接続するコンストラクタ
     public function __construct()
     {
-        global $pdo;
-        global $env;
+        $this->connectDb();
+    }
 
-        // グローバル定義した$pdoに対してdb接続とトランザクションを貼る
-        $env = $this->getEnv();
-        $pdo = new PDO(
-            'mysql:host=mysql;dbname=' . $env['DB_DATABASE'],
-            $env['DB_USERNAME'],
-            $env['DB_PASSWORD'],
-            [
-                PDO::ATTR_ERRMODE          => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_EMULATE_PREPARES => false,
-            ]
-        );
-
-        $pdo->beginTransaction();
-
+    // 処理終了時に
+    public function __destruct()
+    {
+        $this->$pdo = null;
     }
 
     // 抽象メソッドの定義
     abstract public function Action();
+
+
+    /**
+    * コントローラで実行する
+    */
+    public function execAction()
+    {
+        try {
+            $this->$pdo->beginTransaction();
+            // 例外が発生しなければコミット
+            $this->Action();
+            $this->$pdo->commit();
+
+        } catch (PDOException $e) {
+            echo "コミットできませんでした" . $e->getMessage();
+            $this->$pdo->rollBack();
+        } catch (Exception $e) {
+            echo "例外が発生しました" . $e->getMessage();
+            $this->$pdo->rollBack();
+        }
+
+    }
 
     /**
     * テンプレートを呼び出す
@@ -34,7 +49,6 @@ abstract class BaseController
     */
     public function getTemplate($file_name)
     {
-        // return false;
         $file = file_get_contents("./views/" . $file_name . ".html");
         return $file;
     }
@@ -100,13 +114,31 @@ abstract class BaseController
         preg_match("/DB_DATABASE=(\w+)/", $file , $env_database);
         preg_match("/DB_USERNAME=(\w+)/", $file , $env_username);
         preg_match("/DB_PASSWORD=(\w+)/", $file , $env_password);
-        $env = [
+        $this->$env = [
             'DB_DATABASE' => $env_database[1],
             'DB_USERNAME' => $env_username[1],
             'DB_PASSWORD' => $env_password[1]
         ];
 
-        return $env;
+        return $this->$env;
+    }
+
+    /**
+     * データベースに接続する
+     */
+    public function connectDb()
+    {
+        // dbに接続する
+        $this->$env = $this->getEnv();
+        $this->$pdo = new PDO(
+            'mysql:host=mysql;dbname=' . $this->$env['DB_DATABASE'],
+            $this->$env['DB_USERNAME'],
+            $this->$env['DB_PASSWORD'],
+            [
+                PDO::ATTR_ERRMODE          => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_EMULATE_PREPARES => false,
+            ]
+        );
     }
 
 }

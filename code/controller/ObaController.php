@@ -18,5 +18,13 @@ class ObaController extends BaseController
             throw new Exception('HTMLの出力に失敗しました。');
         }
 
+        // データベースに書き込む
+        $user_name = "obachan";
+        $stmt = $this->$pdo->prepare("INSERT INTO commit_table (user_name) VALUES (:user_name)");
+        $stmt->bindParam(':user_name', $user_name, PDO::PARAM_STR);
+        if (!$stmt->execute()) {
+            throw new PDOException('テーブルの書き込みに失敗したZ');
+        }
+
     }
 }
