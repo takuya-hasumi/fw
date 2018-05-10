@@ -14,7 +14,7 @@ abstract class BaseController
     // 処理終了時に
     public function __destruct()
     {
-        $this->$pdo = null;
+        $this->pdo = null;
     }
 
     // 抽象メソッドの定義
@@ -27,17 +27,17 @@ abstract class BaseController
     public function execAction()
     {
         try {
-            $this->$pdo->beginTransaction();
+            $this->pdo->beginTransaction();
             // 例外が発生しなければコミット
             $this->Action();
-            $this->$pdo->commit();
+            $this->pdo->commit();
 
         } catch (PDOException $e) {
             echo "コミットできませんでした" . $e->getMessage();
-            $this->$pdo->rollBack();
+            $this->pdo->rollBack();
         } catch (Exception $e) {
             echo "例外が発生しました" . $e->getMessage();
-            $this->$pdo->rollBack();
+            $this->pdo->rollBack();
         }
 
     }
@@ -114,13 +114,13 @@ abstract class BaseController
         preg_match("/DB_DATABASE=(\w+)/", $file , $env_database);
         preg_match("/DB_USERNAME=(\w+)/", $file , $env_username);
         preg_match("/DB_PASSWORD=(\w+)/", $file , $env_password);
-        $this->$env = [
+        $this->env = [
             'DB_DATABASE' => $env_database[1],
             'DB_USERNAME' => $env_username[1],
             'DB_PASSWORD' => $env_password[1]
         ];
 
-        return $this->$env;
+        return $this->env;
     }
 
     /**
@@ -129,11 +129,11 @@ abstract class BaseController
     public function connectDb()
     {
         // dbに接続する
-        $this->$env = $this->getEnv();
-        $this->$pdo = new PDO(
-            'mysql:host=mysql;dbname=' . $this->$env['DB_DATABASE'],
-            $this->$env['DB_USERNAME'],
-            $this->$env['DB_PASSWORD'],
+        $this->env = $this->getEnv();
+        $this->pdo = new PDO(
+            'mysql:host=mysql;dbname=' . $this->env['DB_DATABASE'],
+            $this->env['DB_USERNAME'],
+            $this->env['DB_PASSWORD'],
             [
                 PDO::ATTR_ERRMODE          => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_EMULATE_PREPARES => false,
