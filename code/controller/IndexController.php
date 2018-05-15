@@ -1,7 +1,7 @@
 <?php
 class IndexController extends BaseController
 {
-    public function Action()
+    public function action()
     {
         // 任意のテンプレートの呼び出し
         if (!$file = $this->getTemplate("index")) {

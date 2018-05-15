@@ -6,7 +6,7 @@ class ExceptionController extends BaseController
     * @param
     * @return
     */
-    public function Action()
+    public function action()
     {
         $file = file_get_contents("./views/404.html");
         $this->viewHtml($file);

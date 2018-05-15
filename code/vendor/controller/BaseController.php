@@ -18,8 +18,7 @@ abstract class BaseController
     }
 
     // 抽象メソッドの定義
-    abstract public function Action();
-
+    abstract public function action();
 
     /**
     * コントローラで実行する
@@ -27,9 +26,9 @@ abstract class BaseController
     public function execAction()
     {
         try {
-            $this->pdo->beginTransaction();
             // 例外が発生しなければコミット
-            $this->Action();
+            $this->pdo->beginTransaction();
+            $this->action();
             $this->pdo->commit();
 
         } catch (PDOException $e) {
