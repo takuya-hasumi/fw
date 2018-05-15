@@ -1,44 +1,41 @@
 <?php
 class Route
 {
-    public $status = "200";
+    protected $status = "200";
 
     /**
      * ルーティングを取得
-     * @param  string $request_url
-     * @return array  $query
+     * @return array $params コントローラ、クエリをパラメータとして返す
      */
     public function getRoute()
     {
         // リクエストURL取得
         $request_url = $_SERVER["REQUEST_URI"];
-        // 各module取得
-        $module = $this->getModule($request_url);
+        // コントローラ取得
+        $controller = $this->getController($request_url);
         // 各クエリ取得
         $query  = $this->getQuery($request_url);
-        // モジュール、クエリを返す
-        $ret = array(
-            'module' => $module,
-            'query'  => $query
-        );
+        // コントローラ、クエリをパラメータとして返す
+        $params = [
+            'controller' => $controller['controller_name'],
+            'query'      => $query['query_name']
+        ];
 
-        return $ret;
+        return $params;
     }
 
     /**
      * モジュール名を取得
      * @param  string $request_url
-     * @return array  $module
+     * @return array  $controller
      */
-    protected function getModule($request_url)
+    protected function getController($request_url)
     {
-        $val = preg_match_all("/[\/].[a-z]*/", $request_url, $module_name);
-        $module_name = $module_name[0];
-        for ($i=0; $i < count($module_name); $i++) {
-            $module[] = trim($module_name[$i], "/");
-        }
+        // リクエストURLからコントローラ名を抽出
+        preg_match("/(?P<controller_name>\/[a-z]*)/", $request_url, $path);
+        $controller['controller_name'] = trim($path['controller_name'], "/");
 
-        return $module;
+        return $controller;
     }
 
     /**
@@ -48,44 +45,53 @@ class Route
      */
     protected function getQuery($request_url)
     {
-        $params = preg_match_all("/[\?].[a-zA-Z0-9&]*/", $request_url, $query_name);
-
-        $query_name = $query_name[0];
-        for ($i=0; $i < count($query_name); $i++) {
-            $query[] = trim($query_name[$i], "?");
-        }
+        preg_match("/(?P<query_name>[\?].[a-zA-Z0-9&=]*)/", $request_url, $query_name);
+        $query['query_name'] = trim($query_name['query_name'], "?");
 
         return $query;
     }
 
     /**
-     * ルーティングによって任意のコントローラーを選択
-     * @param  mixed $module
-     * @return mixed $user_controller
+     * ルーティングによって任意のコントローラーのパスを選択
+     * @param  string $controller_name
+     * @return array $controller コントローラ名とパスを保持した配列
      */
-    public function selectController($module)
+    public function selectController($controller_name)
     {
-        // 大文字変換
-        $controller_name = ucfirst($module[0]);
+        // コントローラ名を大文字に変換する
+        $controller_name = ucfirst($controller_name);
         // コントローラのパスを指定
         if (!empty($controller_name)) {
             $controller_path = "./controller/" . $controller_name . "Controller.php";
         } else {
             $controller_path = "./controller/IndexController.php";
-            $class_name = "IndexController";
         }
+        $controller = [
+            'controller_name' => $controller_name,
+            'controller_path' => $controller_path
+        ];
 
-        // 任意のコントローラを読み込む
-        if ($file = file_exists($controller_path)) {
-            $user_controller = require($controller_path);
-            if (empty($class_name)) {
-                $class_name = $controller_name . "Controller";
-            }
+        return $controller;
+    }
+
+    /**
+     * クラス名を取得
+     * @param  array $controller コントローラ名とパスを保持した配列
+     * @return string $class_name
+     */
+    public function getClassName($controller)
+    {
+        // コントローラを読み込んでクラス名を指定
+        if ($file = file_exists($controller['controller_path'])) {
+            require($controller['controller_path']);
+            $class_name = !empty($controller['controller_name']) ? $controller['controller_name'] . "Controller" : "IndexController";
         } else {
-            $user_controller = require("./vendor/controller/ExceptionController.php");
-            http_response_code(404);
+            // パスが存在しなければ404を返す
+            require("./vendor/controller/ExceptionController.php");
             $class_name = "ExceptionController";
+            $status     = 404;
         }
+        http_response_code($status);
 
         return $class_name;
     }
