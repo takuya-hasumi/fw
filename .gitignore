@@ -1,4 +1,2 @@
-.mysql/
-.containers/
-./mysql
-./containers
+mysql/
+containers/
