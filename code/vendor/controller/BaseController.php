@@ -2,21 +2,6 @@
 // 抽象クラスの定義
 abstract class BaseController
 {
-    protected $pdo;
-    protected $env;
-
-    // DBに接続するコンストラクタ
-    public function __construct()
-    {
-        $this->connectDb();
-    }
-
-    // 処理終了時に
-    public function __destruct()
-    {
-        $this->pdo = null;
-    }
-
     // 抽象メソッドの定義
     abstract public function action();
 
@@ -25,20 +10,17 @@ abstract class BaseController
     */
     public function execAction()
     {
-        try {
-            // 例外が発生しなければコミット
-            $this->pdo->beginTransaction();
-            $this->action();
-            $this->pdo->commit();
+        $this->action();
+    }
 
-        } catch (PDOException $e) {
-            echo "コミットできませんでした" . $e->getMessage();
-            $this->pdo->rollBack();
-        } catch (Exception $e) {
-            echo "例外が発生しました" . $e->getMessage();
-            $this->pdo->rollBack();
-        }
-
+    /**
+    * HTMLへの出力
+    * @return string $file
+    */
+    public function view($file_name, $replace) {
+        $file = $this->getTemplate($file_name);
+        $file = $this->replaceParams($file, $replace);
+        $this->viewHtml($file);
     }
 
     /**
@@ -100,44 +82,6 @@ abstract class BaseController
     {
         // 出力
         return (print $file) ? true: false;
-    }
-
-    /**
-    * envを定義して取得
-    * @return array $env
-    */
-    public function getEnv()
-    {
-        // envファイルの読み込みと設定
-        $file = file_get_contents("./.env");
-        preg_match("/DB_DATABASE=(\w+)/", $file , $env_database);
-        preg_match("/DB_USERNAME=(\w+)/", $file , $env_username);
-        preg_match("/DB_PASSWORD=(\w+)/", $file , $env_password);
-        $this->env = [
-            'DB_DATABASE' => $env_database[1],
-            'DB_USERNAME' => $env_username[1],
-            'DB_PASSWORD' => $env_password[1]
-        ];
-
-        return $this->env;
-    }
-
-    /**
-     * データベースに接続する
-     */
-    public function connectDb()
-    {
-        // dbに接続する
-        $this->env = $this->getEnv();
-        $this->pdo = new PDO(
-            'mysql:host=mysql;dbname=' . $this->env['DB_DATABASE'],
-            $this->env['DB_USERNAME'],
-            $this->env['DB_PASSWORD'],
-            [
-                PDO::ATTR_ERRMODE          => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_EMULATE_PREPARES => false,
-            ]
-        );
     }
 
 }

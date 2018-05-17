@@ -44,6 +44,7 @@ function getClass($route, $params)
 {
     // BaseControllerの呼び出し
     require("./vendor/controller/BaseController.php");
+    require("./vendor/controller/DbController.php");
     // 任意のコントローラを選択
     $controller = $route->selectController($params['controller']);
     // クラス名を取得

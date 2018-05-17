@@ -1,23 +1,11 @@
 <?php
-class HasuController extends BaseController
+class HasuController extends DbController
 {
     public function action()
     {
-        // 任意のテンプレートの呼び出し
-        if (!$file = $this->getTemplate("hasumin")) {
-            throw new Exception('テンプレートの呼び出しに失敗しました。');
-        }
-
-        // 呼び出したテンプレートを置換
-        if (!$file = $this->replaceParams($file, "置換したで")) {
-            throw new Exception('テンプレートの置換に失敗しました。');
-        }
-
-        // HTMLに出力
-        if (!$this->viewHtml($file)) {
-            throw new Exception('HTMLの出力に失敗しました。');
-        }
-
+        // 任意のテンプレートを置換して読み込み
+        $this->view('hasumin', '置換したよ');
+        
         // データベースに書き込む
         $user_name = "hasumin";
         $stmt = $this->pdo->prepare("INSERT INTO commit_table (user_name) VALUES (:user_name)");
