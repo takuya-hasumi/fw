@@ -110,14 +110,15 @@ abstract class BaseController
         }
 
         // エラーが起きてたら箇所と内容を表示
-        if (empty($errors)) {
-            echo "送信に成功しました！";
-        } else {
-            foreach ($errors as $value) {
-                echo $value . '<br>';
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if (empty($errors)) {
+                echo "送信に成功しました！";
+            } else {
+                foreach ($errors as $value) {
+                    echo $value . '<br>';
+                }
             }
         }
-
     }
 
 }
