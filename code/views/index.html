@@ -10,8 +10,10 @@
   <h1>インデックス</h1>
   <p>{{frame}}</p>
   <p>{{work}}</p>
-  <form action="post">
-    <input type="text" name="text">
+  <form action="" method="POST">
+    <p>名前：<input type="text" name="name">（文字、1文字以上20文字以下）</p>
+    <p>年齢：<input type="text" name="age">（数字、0文字以上130文字以下）</p>
+    <p>住所<span style="color:red">*</span>：<input type="text" name="address">（必須）</p>
     <input type="submit">
   </form>
 </body>

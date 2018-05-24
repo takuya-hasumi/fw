@@ -10,7 +10,12 @@ abstract class BaseController
     */
     public function execAction()
     {
-        $this->action();
+        try {
+            $this->action();
+        } catch (Exception $e) {
+            echo $e->getMessage() . "で例外が発生しました";
+        }
+
     }
 
     /**
@@ -82,6 +87,37 @@ abstract class BaseController
     {
         // 出力
         return (print $file) ? true: false;
+    }
+
+    /**
+     * バリデーションをチェックする
+     * @param array $form_condition
+     * @return bool
+     */
+    public function checkValidate(array $form_condition)
+    {
+        // リクエストを取得
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $request = $_POST;
+        }
+        
+        // バリデータのチェック
+        if (isset($request)) {
+            require('./vendor/configs/Validation.php');
+            $validation = new Validation();
+            // リクエストのバリデーションが正しいかチェック
+            $errors = $validation->validate($form_condition, $request);
+        }
+
+        // エラーが起きてたら箇所と内容を表示
+        if (empty($errors)) {
+            echo "送信に成功しました！";
+        } else {
+            foreach ($errors as $value) {
+                echo $value . '<br>';
+            }
+        }
+
     }
 
 }
