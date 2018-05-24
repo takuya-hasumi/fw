@@ -5,9 +5,9 @@ $route = execRouting();
 // ルーティング処理を元にパラメータを取得
 $params = getParams($route);
 // クラス名の読み込み
-$class_name = getClass($route, $params);
+$class_name = getClassName($route, $params);
 // クラス名を元にコントローラを実行
-execController($class_name);
+execControllerAction($class_name);
 
 /**
  * ルーティング処理を実行
@@ -40,7 +40,7 @@ function getParams($route)
  * @param  array $params コントローラとクエリーが格納された連想配列
  * @return string $class_name
  */
-function getClass($route, $params)
+function getClassName($route, $params)
 {
     // BaseControllerの呼び出し
     require("./vendor/controller/BaseController.php");
@@ -48,7 +48,7 @@ function getClass($route, $params)
     // 任意のコントローラを選択
     $controller = $route->selectController($params['controller']);
     // クラス名を取得
-    $class_name = $route->getClassName($controller);
+    $class_name = $route->findClassName($controller);
 
     return $class_name;
 }
@@ -57,7 +57,7 @@ function getClass($route, $params)
  * クラス名をもとにコントローラを実行
  * @param  string $class_name
  */
-function execController($class_name)
+function execControllerAction($class_name)
 {
     // コントローラのアクションを実行
     $exec = new $class_name();

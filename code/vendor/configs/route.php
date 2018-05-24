@@ -75,11 +75,11 @@ class Route
     }
 
     /**
-     * クラス名を取得
+     * クラス名を探す
      * @param  array $controller コントローラ名とパスを保持した配列
      * @return string $class_name
      */
-    public function getClassName($controller)
+    public function findClassName($controller)
     {
         // コントローラを読み込んでクラス名を指定
         if ($file = file_exists($controller['controller_path'])) {
