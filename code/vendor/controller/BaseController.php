@@ -12,6 +12,8 @@ abstract class BaseController
     {
         try {
             $this->action();
+        } catch (PDOException $e) {
+            echo $e->getMessage();
         } catch (Exception $e) {
             echo $e->getMessage() . "で例外が発生しました";
         }
@@ -22,7 +24,8 @@ abstract class BaseController
     * HTMLへの出力
     * @return string $file
     */
-    public function view($file_name, $replace) {
+    public function view($file_name, $replace)
+    {
         $file = $this->getTemplate($file_name);
         $file = $this->replaceParams($file, $replace);
         $this->viewHtml($file);
@@ -94,31 +97,32 @@ abstract class BaseController
      * @param array $form_condition
      * @return bool
      */
-    public function checkValidate(array $form_condition)
+    public function checkValidate(array $condition)
     {
         // リクエストを取得
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $request = $_POST;
-        }
+        $request = $_POST ?: $_GET;
+        require('./vendor/configs/Validation.php');
+        $validation = new Validation($condition, $request);
+        // リクエストのバリデーションが正しいかチェック
+        $errors = $validation->validate();
         
-        // バリデータのチェック
-        if (isset($request)) {
-            require('./vendor/configs/Validation.php');
-            $validation = new Validation();
-            // リクエストのバリデーションが正しいかチェック
-            $errors = $validation->validate($form_condition, $request);
-        }
+        return $errors;
+    }
 
-        // エラーが起きてたら箇所と内容を表示
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (empty($errors)) {
-                echo "送信に成功しました！";
-            } else {
-                foreach ($errors as $value) {
-                    echo $value . '<br>';
-                }
-            }
-        }
+    public function orequent($key, $value)
+    {
+        // 呼び出し元のHTMLファイルの取得
+        $file = lcfirst(str_replace('Controller', '', get_called_class())) . ".html";
+        $subject = file_get_contents("./views/" . $file);
+
+        // DBから取得した値で置換
+        $pattern_value = 'orequent->' . $key;
+        // var_dump($pattern_value);
+        $pattern = '/{{' . $pattern_value . '}}/';
+        $file = preg_replace($pattern, $value, $subject);
+        
+        print $file;
+        
     }
 
 }

@@ -4,9 +4,9 @@ class IndexController extends BaseController
     public function action()
     {
         // 任意のテンプレートを置換して読み込み
-        $this->view('index', 'This is INDEXだZ');
+        $this->view('index', 'INDEX');
 
-        $form_condition = [
+        $condition = [
             'name' => [
                 'type' => 'string',
                 'min' => 1,
@@ -22,7 +22,16 @@ class IndexController extends BaseController
                 'require' => 'true'
             ]
         ];
-        $result = $this->checkValidate($form_condition);
-
+        
+        if ($_POST || $_GET) {
+            $result = $this->checkValidate($condition);
+            if (!$result) {
+                echo "送信に成功しました！";
+            } else {
+                foreach ($result as $value) {
+                    echo $value . '<br>';
+                }
+            }
+        }
     }
 }
