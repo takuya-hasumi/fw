@@ -1,9 +1,30 @@
 <?php
+
 class Database
 {
     protected $env;
     protected $pdo;
 
+    /**
+     * データベースに接続する
+     */
+    public function connectDb()
+    {
+        // dbに接続する
+        $this->env = $this->getEnv();
+        $this->pdo = new PDO(
+            'mysql:host=mysql;dbname=' . $this->env['DB_DATABASE'],
+            $this->env['DB_USERNAME'],
+            $this->env['DB_PASSWORD'],
+            [
+                PDO::ATTR_ERRMODE          => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_EMULATE_PREPARES => false,
+            ]
+        );
+
+        return $this->pdo;
+    }
+    
     /**
     * envを定義して取得
     * @return array $env
@@ -25,23 +46,4 @@ class Database
         return $this->env;
     }
 
-    /**
-     * データベースに接続する
-     */
-    public function connectDb()
-    {
-        // dbに接続する
-        $this->env = $this->getEnv();
-        $this->pdo = new PDO(
-            'mysql:host=mysql;dbname=' . $this->env['DB_DATABASE'],
-            $this->env['DB_USERNAME'],
-            $this->env['DB_PASSWORD'],
-            [
-                PDO::ATTR_ERRMODE          => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_EMULATE_PREPARES => false,
-            ]
-        );
-
-        return $this->pdo;
-    }
 }
