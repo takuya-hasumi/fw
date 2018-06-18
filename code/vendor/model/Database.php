@@ -2,8 +2,26 @@
 
 class Database
 {
-    protected $env;
-    protected $pdo;
+    public $env;
+    public $pdo;
+
+    /**
+     * データベースに接続する
+     */
+    public function __construct()
+    {
+        // dbに接続する
+        $this->env = $this->getEnv();
+        $this->pdo = new PDO(
+            'mysql:host=mysql;dbname=' . $this->env['DB_DATABASE'],
+            $this->env['DB_USERNAME'],
+            $this->env['DB_PASSWORD'],
+            [
+                PDO::ATTR_ERRMODE          => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_EMULATE_PREPARES => false,
+            ]
+        );
+    }
 
     /**
      * データベースに接続する
@@ -24,7 +42,7 @@ class Database
 
         return $this->pdo;
     }
-    
+
     /**
     * envを定義して取得
     * @return array $env

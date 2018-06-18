@@ -12,8 +12,6 @@ abstract class BaseController
     {
         try {
             $this->action();
-        } catch (PDOException $e) {
-            echo $e->getMessage();
         } catch (Exception $e) {
             echo $e->getMessage() . "で例外が発生しました";
         }
