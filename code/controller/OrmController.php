@@ -34,7 +34,7 @@ class OrmController extends DbController
         // $name = Users::show($columns, $where);
         // 取得した値で本文を置換
         // $this->orequent('name', $name['user_name']);
-        // Users:t:disconnect();
+        // Users::disconnect();
 
     }
 }
