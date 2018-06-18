@@ -34,9 +34,11 @@ class Model
      * ユーザが作成したModelの読み込み
      */
     public static function loadModels() {
-        // userが作成したModelファイルをすべて読み込む（一旦静的に書く）
-        require_once('./model/Users.php');
-        require_once('./model/Commit_Table.php');
+        foreach(glob('./model/*') as $file){
+            if(is_file($file)){
+                require_once($file);
+            }
+        }
     }
 
     /**
@@ -328,20 +330,6 @@ class Model
         $stmt = $pdo->prepare($sql);
         $result = $stmt->execute();
         return $result;
-    }
-
-    /**
-     * ゲッター
-     */
-    public function __get($data) {
-        // var_dump("getter");
-    }
-    
-    /**
-     * セッター
-     */
-    public function __set($key, $val) {
-        $this->$key = $val;
     }
 
 }
