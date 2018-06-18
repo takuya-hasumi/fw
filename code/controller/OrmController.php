@@ -17,9 +17,9 @@ class OrmController extends DbController
         // $user->update('name', 'update hasumin');
 
         // 別なModelから取得
-        // $inno = Inno::find(2);
-        // $user_name = $inno->user_name;
-        // var_dump($user_name);
+        $inno = Inno::find(2);
+        $user_name = $inno->user_name;
+        var_dump($user_name);
 
     }
 }

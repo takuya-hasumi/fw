@@ -155,12 +155,9 @@ class Model
      */
     public static function find(int $id) 
     {
-        // プロパティにオブジェクトがセットされていなかったらセットする
-        if (!isset(self::$object)) {
-            $class_name = get_called_class();
-            $model = new $class_name;
-            self::setObject($model);
-        }
+        // オブジェクトの生成
+        $class = get_called_class();
+        $model = new $class;
 
         // カラム定義を取得
         $table = lcfirst(get_called_class());
