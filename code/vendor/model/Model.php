@@ -7,15 +7,16 @@ class Model
     public static $object;
     public $table;
 
-    public function __construct() {
+    public function __construct() 
+    {
         // ユーザが作成したModelの読み込み（オートロード）
         $this->loadModels();
         // 対象テーブルを定義
         $this->table = lcfirst(get_called_class());
         // PDO接続
         if (!isset(self::$pdo)) {
-            self::$env = $this->getEnv;
-            self::$pdo = $this->getPDdo;
+            self::$env = $this->getEnv();
+            self::$pdo = $this->getPDdo();
         }
 
     }
@@ -25,15 +26,17 @@ class Model
      *
      * @param Database $database
      */
-    public static function setDbConnection($database) {
+    public static function setDbConnection($database) 
+    {
         self::$pdo = $database->pdo;
         self::$env = $database->env;
     }
 
     /**
-     * ユーザが作成したModelの読み込み
+     * ユーザが作成したModelを一括で読みこむ
      */
-    public static function loadModels() {
+    public static function loadModels() 
+    {
         foreach(glob('./model/*') as $file){
             if(is_file($file)){
                 require_once($file);
@@ -150,7 +153,8 @@ class Model
      * @param integer $id
      * @return Model $model
      */
-    public static function find(int $id) {
+    public static function find(int $id) 
+    {
         // プロパティにオブジェクトがセットされていなかったらセットする
         if (!isset(self::$object)) {
             $class_name = get_called_class();
