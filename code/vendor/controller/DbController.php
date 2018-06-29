@@ -8,14 +8,11 @@ class DbController extends BaseController
     // DBに接続するコンストラクタ
     public function __construct()
     {
-        // Database.phpを読み込むやり方
-        require("./vendor/model/Database.php");
-        $database = new Database();
-        $this->pdo = $database->pdo;
-
-        // Modelを使う
+        // PDOをプロパティにセット
         require("./vendor/model/Model.php");
-        Model::setDbConnection($database);
+        $pdo = Model::connectDb();
+        $this->pdo = $pdo;
+        // UserModelのオートロード
         Model::loadModels();
     }
 
