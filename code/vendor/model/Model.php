@@ -15,7 +15,7 @@ class Model
         // PDO接続
         if (!isset(self::$pdo)) {
             self::$env = $this->getEnv();
-            self::$pdo = $this->getPDdo();
+            self::$pdo = $this->getPdo();
         }
     }
     
