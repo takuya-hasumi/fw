@@ -2,71 +2,124 @@
 
 class Model
 {
+    // シングルトン風
     public static $pdo;
     public static $env;
     public static $object;
     public $table;
 
-    public function __construct() {
-        // ユーザが作成したModelの読み込み（オートロード）
-        $this->loadModels();
+    public function __construct() 
+    {
         // 対象テーブルを定義
         $this->table = lcfirst(get_called_class());
         // PDO接続
         if (!isset(self::$pdo)) {
-            self::$env = $this->getEnv;
-            self::$pdo = $this->getPDdo;
+            self::$env = $this->getEnv();
+            self::$pdo = $this->getPdo();
         }
-
     }
-
-    /**
-     * プロパティにPDOと環境変数をセットする
-     *
-     * @param Database $database
-     */
-    public static function setDbConnection($database) {
-        self::$pdo = $database->pdo;
-        self::$env = $database->env;
-    }
-
-    /**
-     * ユーザが作成したModelの読み込み
-     */
-    public static function loadModels() {
-        // userが作成したModelファイルをすべて読み込む（一旦静的に書く）
-        require_once('./model/Users.php');
-        require_once('./model/Commit_Table.php');
-    }
-
+    
     /**
      * DBに接続する
      */
-    public function connect()
+    public static function connectDb()
     {
         // PDO接続
-        $this->env = $this->setEnv();
-        $this->pdo = new PDO(
-            'mysql:host=mysql;dbname=' . $this->env['DB_DATABASE'],
-            $this->env['DB_USERNAME'],
-            $this->env['DB_PASSWORD'],
-            [
-                // エラーレポートの設定（例外を投げる）
-                PDO::ATTR_ERRMODE          => PDO::ERRMODE_EXCEPTION,
-                // プリペアドステートメント（ネイティブのプリペアドステートメントを設定）
-                PDO::ATTR_EMULATE_PREPARES => false,
-            ]
-        );
+        self::setEnv();
+        self::setPdo();
+        
+        return self::$pdo;
     }
 
     /**
-     * 自身のプロパティにオブジェクトをセット
-     *
-     * @param Model::$object $object
+     * ユーザが作成したModelを一括で読みこむ
      */
-    public static function setObject($object)
+    public static function loadModels() 
     {
-        self::$object = $object;
+        foreach(glob('./model/*') as $file){
+            if(is_file($file)){
+                require_once($file);
+            }
+        }
+    }
+
+    /**
+     * Modelオブジェクトを取得
+     *
+     * @param integer $id
+     * @return Model $model
+     */
+    public static function find(int $id) 
+    {
+        // オブジェクトの生成
+        $class = get_called_class();
+        $model = new $class;
+        self::$object = $model;
+        // self::$object[] = $model;
+
+        // カラム定義を取得
+        $table = lcfirst(get_called_class());
+        $sql = "show columns from " . $table;
+        $stmt = self::$pdo->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // カラム一覧を取得
+        foreach ($result as $keys => $values) {
+            foreach ($values as $key => $value) {
+                if ($key == 'Field') {
+                    $columns[] = $value;
+                }
+            }
+        }
+        
+        // id項目がなければオブジェクト自身を返す
+        $val = preg_grep('/.*id/', $columns);
+        if ($val) {
+            $id_column = $val[0];
+        } else {
+            return $model;
+        }
+        
+        // バリューを取得
+        $sql = "select * from " . $table . " where " . $id_column . " = '" . $id . "'";
+        $stmt = self::$pdo->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // プロパティの追加
+        foreach ($result[0] as $key => $value) {
+            $model->$key = $value;
+        }
+
+        // Modelオブジェクトを返す
+        return $model;
+    }
+
+    /**
+    * 自身のenvを取得
+    *
+    * @return Model::$env 
+    */
+    public static function getEnv()
+    {
+        if (!isset(self::$env)) {
+            self::setEnv();
+        }
+        return self::$env;
+    }
+
+    /**
+    * 自身のpdoを取得
+    *
+    * @return Model::$env 
+    */
+    public static function getPdo()
+    {
+        if (!isset(self::$pdo)) {
+            self::setPdo();
+        }
+        return self::$pdo;
     }
 
     /**
@@ -78,14 +131,13 @@ class Model
     public static function getObject()
     {
         if (!isset(self::$object)) {
-            $called_class = get_called_class();
-            self::$object = new $called_class();
+            self::setObject();
         }
         return self::$object;
     }
 
     /**
-    * envをプロパティにセット
+    * 自身のプロパティにenvをセット
     */
     public static function setEnv()
     {
@@ -105,33 +157,37 @@ class Model
     }
 
     /**
-    * envを定義して取得
-    *
-    * @return Model::$env 
-    */
-    public static function getEnv()
-    {
-        return self::$enf;
-    }
-
-    /**
-    * pdoを定義して取得
+    * 自身のプロパティにpdoをセット
     *
     * @param Model $pdo
     */
-    public static function setPdo($pdo)
+    public static function setPdo()
     {
-        self::$pdo = $pdo;
+        if (!isset(self::$env)) {
+            self::setEnv();
+        }
+        
+        self::$pdo = new PDO(
+            'mysql:host=mysql;dbname=' . self::$env['DB_DATABASE'],
+            self::$env['DB_USERNAME'],
+            self::$env['DB_PASSWORD'],
+            [
+                // エラーレポートの設定（例外を投げる）
+                PDO::ATTR_ERRMODE          => PDO::ERRMODE_EXCEPTION,
+                // プリペアドステートメント（ネイティブのプリペアドステートメントを設定）
+                PDO::ATTR_EMULATE_PREPARES => false,
+            ]
+        );
     }
-
+    
     /**
-    * pdoをセット
-    *
-    * @return Model object
-    */
-    public static function getPdo()
+     * 自身のプロパティにオブジェクトをセット
+     *
+     */
+    public static function setObject()
     {
-        return self::$pdo;
+        $called_class = get_called_class();
+        self::$object[] = new $called_class();
     }
 
     /**
@@ -139,73 +195,23 @@ class Model
      */
     public static function disconnect()
     {
-        Model::$pdo = null;
-    }
-
-    /**
-     * Modelオブジェクトを取得
-     *
-     * @param integer $id
-     * @return Model $model
-     */
-    public static function find(int $id) {
-        // プロパティにオブジェクトがセットされていなかったらセットする
-        if (!isset(self::$object)) {
-            $class_name = get_called_class();
-            $model = new $class_name;
-            self::setObject($model);
-        }
-
-        // カラム定義を取得
-        $table = lcfirst(get_called_class());
-        $sql = "show columns from " . $table;
-        $stmt = self::$pdo->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // カラム一覧を取得
-        foreach ($result as $keys => $values) {
-            foreach ($values as $key => $value) {
-                if ($key == 'Field') {
-                    $columns[] = $value;
-                }
-            }
-        }
-        
-        // id項目があったら取得
-        $val = preg_grep('/.*id/', $columns);
-        if ($val) {
-            $id_column = $val[0];
-        }
-        
-        // バリューを取得
-        $sql = "select * from " . $table . " where " . $id_column . " = '" . $id . "'";
-        $stmt = self::$pdo->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // プロパティの追加
-        foreach ($result[0] as $key => $value) {
-            $model->$key = $value;
-        }
-
-        // Modelオブジェクトを返す
-        return $model;
-
+        self::$pdo = null;
     }
 
     /**
      * データの更新
-     * @param string $column
+     * @param string $property
      * @param string $value
      */
-    public function update($column, $value)
+    public function update($property, $update_value)
     {
-        // カラムが存在すればアップデート
-        if (!property_exists(self::$object, $column)) {
+        // プロパティが存在すればアップデート（エラーハンドリング）
+        if (!property_exists(self::$object, $property)) {
             return;
         }
-        $sql = "update " . self::$object->table . " set " . $column . " = '" . $value . "'";
+
+        // update処理
+        $sql = "update " . self::$object->table . " set " . $property . " = '" . $update_value . "'";
         $stmt = self::$pdo->prepare($sql);
         if (!$stmt->execute()) {
             throw new Exception(self::$object->tale . "テーブルの更新に失敗しました");
@@ -328,20 +334,6 @@ class Model
         $stmt = $pdo->prepare($sql);
         $result = $stmt->execute();
         return $result;
-    }
-
-    /**
-     * ゲッター
-     */
-    public function __get($data) {
-        // var_dump("getter");
-    }
-    
-    /**
-     * セッター
-     */
-    public function __set($key, $val) {
-        $this->$key = $val;
     }
 
 }

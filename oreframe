@@ -1,0 +1,23 @@
+#!/bin/sh
+echo "ORE FRAMEでmigrationしたい!"
+# oreframe migrate companyとかやると、勝手にModelのCompany.phpを作成してほしい
+# @todo migrateからのテーブル作成
+migrate="migrate"
+# @todo 引数がなかったときの対応
+# @todo $2が小文字だったときの対応
+if [ $1 = "migrate" ] && [ $2 ]; then
+  # ファイルの生成
+  touch ./code/model/$2.php
+  # templateを中に書く
+  cat > ./code/model/$2.php << EOF
+<?php
+
+class $2 extends Model
+{
+    
+}
+EOF
+  echo "$2モデルを作成したよ"
+else
+  echo "特に何もしないよ"
+fi
